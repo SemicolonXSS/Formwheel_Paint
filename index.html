@@ -72,4 +72,17 @@ for(const id of ['undo','redo','clear','resize','load','save'])$(id).addEventLis
 
 document.onkeydown=e=>{if(e.target.matches('input,textarea'))return;if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();(e.shiftKey?$('redo'):$('undo')).click()}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='y'){e.preventDefault();$('redo').click()}};try{const s=localStorage.getItem('formwheel-paint-draft');if(s){const im=new Image();im.onload=()=>{g.drawImage(im,0,0,c.width,c.height);checkpoint()};im.src=s}else checkpoint()}catch(e){checkpoint()}
 })();
+</script><script>
+/* Secol Random 9 - additive tools */
+document.addEventListener('DOMContentLoaded',()=>{
+const c=document.getElementById('canvas'),color=document.getElementById('color'),size=document.getElementById('size')||document.getElementById('sz');if(!c)return;
+const bar=document.createElement('section');bar.style.cssText='display:flex;flex-wrap:wrap;gap:7px;padding:10px;background:#222a46;border-radius:12px;margin:12px';
+bar.innerHTML='<b style="width:100%">🎲 Secol 도구 확장</b><button id="sr9paintRandom" type="button">🎨 랜덤 색상</button><button id="sr9paintPalette" type="button">🌈 팔레트 5색</button><button id="sr9paintGrid" type="button">🔲 격자 표시</button><button id="sr9paintChallenge" type="button">🎯 오늘의 그림 주제</button><span id="sr9paintInfo" role="status" style="align-self:center"></span>';
+c.parentElement.before(bar);
+const info=document.getElementById('sr9paintInfo');const randomColor=()=>{const b=crypto.getRandomValues(new Uint8Array(3));return '#'+[...b].map(v=>v.toString(16).padStart(2,'0')).join('')};
+document.getElementById('sr9paintRandom').onclick=()=>{if(color){color.value=randomColor();color.dispatchEvent(new Event('input',{bubbles:true}));info.textContent='색상 '+color.value}};
+document.getElementById('sr9paintPalette').onclick=()=>{let wrap=document.getElementById('sr9paintColors');if(wrap){wrap.remove();return}wrap=document.createElement('div');wrap.id='sr9paintColors';wrap.style.cssText='display:flex;gap:5px;width:100%';for(let i=0;i<5;i++){const b=document.createElement('button');b.type='button';const clr=randomColor();b.style.cssText='background:'+clr+';width:40px;height:36px';b.title=clr;b.onclick=()=>{if(color){color.value=clr;color.dispatchEvent(new Event('input',{bubbles:true}))}};wrap.append(b)}bar.append(wrap)};
+let grid=null;document.getElementById('sr9paintGrid').onclick=()=>{if(grid){grid.remove();grid=null;return}const parent=c.parentElement;const style=getComputedStyle(parent);if(style.position==='static')parent.style.position='relative';grid=document.createElement('div');grid.style.cssText='position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(to right,#9995 1px,transparent 1px),linear-gradient(to bottom,#9995 1px,transparent 1px);background-size:25px 25px';parent.append(grid)};
+const topics=['나만의 마스코트','우주 도시','비 오는 학교','미래의 자동차','동화 속 동물','마법의 문','나만의 게임 아이콘'];document.getElementById('sr9paintChallenge').onclick=()=>{info.textContent='🎯 '+topics[Math.floor(Math.random()*topics.length)]};
+});
 </script></body></html>
